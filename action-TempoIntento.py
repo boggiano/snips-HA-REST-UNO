@@ -80,13 +80,13 @@ def intent_received_callback(hermes, intent_message):
     stanza    = intent_message.slots.stanza.first()
     azione    = intent_message.slots.azione.first()
     numero    = intent_message.slots.numero.first()
-    oggetto   = intent_message.slots.oggetto.first().lower()
+    oggetto   = intent_message.slots.oggetto.first()
 
     if stanza is not None:
      print ("[Stanza] :  {}".format(stanza.value))
 
     if azione is not None:
-      print ("[Azione] :  {}".format(azione.value))
+      print ("[Azione] :  -{}-".format(azione.value))
 
     if numero is not None:
       print ("[Numero] :  {}".format(numero.value))
@@ -94,25 +94,54 @@ def intent_received_callback(hermes, intent_message):
     if oggetto is not None:
       print ("[Oggetto] :  {}".format(oggetto.value))
 
+    oggetto ="caffè"
 
 # Se siamo senza stanza possiamo  giocare con gli oggetti senza stanza
     if (stanza is None):
       print ("Siamo SENZA STANZA");
-      if (not oggetto.lower() in oggettiSenzaStanza):
-        print("ERRORE ! Non e' un oggetto contemplato'")
+      if (not oggetto in oggettiSenzaStanza):
+        print("ERRORE ! Non e' un oggetto contemplato")
       else:
-    # Se esiste dobbiamo capire qual'è il dominio dell' oggetto
+#        Se esiste dobbiamo capire qual'è il dominio dell' oggetto
+        print ("Prendiamo l'entity:")
+        print ("Entity: {}".format(oggettiSenzaStanza[oggetto]))
         dominio_tmp = oggettiSenzaStanza[oggetto].split(".")
         dominio = dominio_tmp[0]
         print (dominio)
+        myDeviceId = oggettiSenzaStanza[oggetto]
+        print (myDeviceId)
 
+        if (azione.value == 'accendi'):
+          print("ACCENDIAMO")
+          azione = 'turn_on'
+        else:
+          print("SPEGNIAMO")
+          azione = 'turn_off'
+
+        url = baseUrl + 'services/' + dominio + '/' + azione
+        print (url)
+
+
+        payload = json.dumps({"entity_id": myDeviceId})
+        response = requests.post (url, headers=header, data=payload, verify=False)
+
+        print ("Now the voice")
+        sentence = " Benissimo"
+        hermes.publish_end_session(intent_message.session_id, sentence)
 
 
   else:
-      return
+    print ("Prendiamo l'entity:")
+
+#    sentence = "Va bene"
 
 
+#    hermes.publish_end_session(intent_message.session_id, sentence)
 
+    return
+
+
+''''
   myDeviceId = "switch.tpdesklampstudio"
 
 
@@ -126,28 +155,20 @@ def intent_received_callback(hermes, intent_message):
 #      print (response)
 #      print (response.json()['state'])
 
-  else:
-    if (action.lower() == 'accendi'):
-      azione = 'turn_on'
-    else:
-      azione = 'turn_off'
 
     url = 'https://' + conf['conf']['ipaddress'] + ':' + conf['conf']['port'] + '/api/services/switch/' + azione
     payload = json.dumps({"entity_id": myDeviceId})
     response = requests.post (url, headers=header, data=payload, verify=False)
 
+'''''
 
 
 
 
-
-
-
-
-    hermes.publish_end_session(intent_message.session_id, sentence)
+    
 
 with Hermes(MQTT_ADDR) as h:
-    print ("subscribe to Hermese")
+    print ("subscribe to Hermes")
     h.subscribe_intents(intent_received_callback).start()
 
 
