@@ -49,28 +49,7 @@ def read_config_file(conf_file):
 
 # Callback 
 def intent_received_callback(hermes, intent_message):
-  print("Message in topic arrived!")
-
-  # Disable warning about wrong certificates
-  requests.packages.urllib3.disable_warnings()
-
-
-    conf = read_config_file(CONFIG_INI)
-    print (conf['conf']['password'])
-    print (conf['conf']['port'])
-    print (conf['conf']['ipaddress'])
-
-    baseUrl = 'https://' + conf['conf']['ipaddress'] + ':' + conf['conf']['port'] + '/api/'
-
-    action = "query"
-    #action = "spegni"
-
-
-
-    header = {'Authorization': conf['conf']['password'], 'Content-Type': 'application/json'}
-    print (header)
-
-
+    print("Message in topic arrived!")
 
     sentence = 'Hai chiesto '
 
@@ -104,8 +83,20 @@ def intent_received_callback(hermes, intent_message):
 
 with Hermes(MQTT_ADDR) as h:
     print ("subscribe to Hermese")
-    h.subscribe_intents(intent_received_callback).start()
 
+    conf = read_config_file(CONFIG_INI)
+    print (conf['conf']['password'])
+    print (conf['conf']['port'])
+    print (conf['conf']['ipaddress'])
+
+
+    action = "query"
+    #action = "spegni"
+
+    requests.packages.urllib3.disable_warnings()
+
+    header = {'Authorization': conf['conf']['password'], 'Content-Type': 'application/json'}
+    print (header)
 
     stanza = ''
     cosa= 'modalità notte'
@@ -145,4 +136,4 @@ with Hermes(MQTT_ADDR) as h:
       response = requests.post (url, headers=header, data=payload, verify=False)
 
 
-
+    h.subscribe_intents(intent_received_callback).start()
