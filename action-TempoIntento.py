@@ -18,7 +18,7 @@ CONFIG_ENCODING_FORMAT="utf-8"
 CONFIG_INI="config.ini"
 
 
-oggettiSenzaStanza = {'caffè' : 'switch.tpcucinacaffe',
+oggettiSenzaStanza = {"caffè" : 'switch.tpcucinacaffe',
  'modalità notte': 'input_boolean.bedtime_mode',
  'roomba 630'    : 'switch.romba630_clean',
  'roomba 620'    : 'switch.620_clean',
@@ -32,7 +32,7 @@ oggettiSingoliStanza = {'cucina' : 'light.strip_cucina',
 
 
 oggettiSala = ["light.luce_sala_1","light.luce_sala_2","light.luce_sala_3",
-"l light.strip_sala","light.luce_sala_1",]
+"light.strip_sala","light.luce_sala_5",]
 
 oggettiCamera = ["light.luce_camera", "light.luce_bedlamp_2","light.luce_bedlamp"]
 
@@ -97,10 +97,10 @@ def intent_received_callback(hermes, intent_message):
       print ("[Azione] :  -{}-".format(azione.value))
 
     if numero is not None:
-      print ("[Numero] :  {}".format(numero.value))
+      print ("[Numero] :  -{}-".format(numero.value))
 
     if oggetto is not None:
-      print ("[Oggetto] :  {}".format(oggetto.value))
+      print ("[Oggetto] :  -{}-".format(oggetto.value))
 
 #    oggetto ="caffè"
 
@@ -115,18 +115,18 @@ def intent_received_callback(hermes, intent_message):
 
 # Se siamo senza stanza possiamo  dobbiamo giocare con gli oggetti senza stanza
 
-    if (stanza.value is None):
+    if (stanza is None):
       print ("Siamo SENZA STANZA");
-      if (not oggetto in oggettiSenzaStanza):
+      if (not oggetto.value in oggettiSenzaStanza):
         print("ERRORE ! Non e' un oggetto contemplato")
       else:
 #        Se esiste dobbiamo capire qual'è il dominio dell' oggetto
         print ("Prendiamo l'entity:")
-        print ("Entity: {}".format(oggettiSenzaStanza[oggetto]))
-        dominio_tmp = oggettiSenzaStanza[oggetto].split(".")
+        print ("Entity: {}".format(oggettiSenzaStanza[oggetto.value]))
+        dominio_tmp = oggettiSenzaStanza[oggetto.value].split(".")
         dominio = dominio_tmp[0]
         print (dominio)
-        myDeviceId = oggettiSenzaStanza[oggetto]
+        myDeviceId = oggettiSenzaStanza[oggetto.value]
         print (myDeviceId)
 
         url = baseUrl + 'services/' + dominio + '/' + azione
